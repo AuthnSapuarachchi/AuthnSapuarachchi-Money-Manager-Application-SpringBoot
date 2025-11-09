@@ -1,0 +1,328 @@
+# Smart Money Management App
+
+A comprehensive Spring Boot application for managing personal finances with JWT-based authentication and email activation.
+
+## Features
+
+- User Registration with Email Activation
+- JWT Authentication & Authorization
+- Secure Password Encryption
+- Email Notification Service
+- Global Exception Handling
+- Input Validation
+- CORS Support
+- RESTful API Design
+
+## Technology Stack
+
+- **Backend**: Spring Boot 3.5.7
+- **Security**: Spring Security with JWT
+- **Database**: MySQL 8
+- **ORM**: JPA/Hibernate
+- **Email**: Spring Mail with Brevo SMTP
+- **Validation**: Bean Validation (Hibernate Validator)
+- **Build Tool**: Maven
+- **Java Version**: 21
+
+## Getting Started
+
+### Prerequisites
+
+- Java 21
+- MySQL 8.0+
+- Maven 3.6+
+
+### Database Setup
+
+1. Create a MySQL database named `moneymanage_app`
+2. Update database credentials in `application.properties`
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/moneymanage_app
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+```
+
+### Email Configuration
+
+Update email settings in `application.properties`:
+
+```properties
+spring.mail.host=your_smtp_host
+spring.mail.port=587
+spring.mail.username=your_email_username
+spring.mail.password=your_email_password
+spring.mail.properties.mail.smtp.from=your_from_email
+```
+
+### Running the Application
+
+```bash
+./mvnw spring-boot:run
+```
+
+The application will start on `http://localhost:8080/api/v1.0`
+
+## API Endpoints
+
+### Public Endpoints
+
+#### Health Check
+
+```http
+GET /api/v1.0/health
+GET /api/v1.0/status
+```
+
+**Response:**
+
+```json
+"Smart Money Manage App is running!"
+```
+
+#### User Registration
+
+```http
+POST /api/v1.0/register
+Content-Type: application/json
+
+{
+    "fullName": "John Doe",
+    "email": "john.doe@example.com",
+    "password": "securePassword123",
+    "profilePictureUrl": "https://example.com/profile.jpg"
+}
+```
+
+**Response:**
+
+```json
+{
+  "status": "success",
+  "message": "Registration successful! Please check your email to activate your account.",
+  "user": {
+    "id": 1,
+    "fullName": "John Doe",
+    "email": "john.doe@example.com",
+    "profilePictureUrl": "https://example.com/profile.jpg",
+    "createdAt": "2025-11-09T10:30:00",
+    "updatedAt": "2025-11-09T10:30:00"
+  }
+}
+```
+
+#### Account Activation
+
+```http
+GET /api/v1.0/activate?token={activationToken}
+```
+
+**Response:**
+
+```json
+{
+  "status": "success",
+  "message": "Profile activated successfully."
+}
+```
+
+#### User Login
+
+```http
+POST /api/v1.0/login
+Content-Type: application/json
+
+{
+    "email": "john.doe@example.com",
+    "password": "securePassword123"
+}
+```
+
+**Response:**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9...",
+  "tokenType": "Bearer",
+  "user": {
+    "id": 1,
+    "fullName": "John Doe",
+    "profilePictureUrl": "https://example.com/profile.jpg",
+    "createdAt": "2025-11-09T10:30:00",
+    "updatedAt": "2025-11-09T10:30:00"
+  }
+}
+```
+
+### Protected Endpoints
+
+All protected endpoints require the JWT token in the Authorization header:
+
+```http
+Authorization: Bearer {your-jwt-token}
+```
+
+#### Get Current User Profile
+
+```http
+GET /api/v1.0/profile
+Authorization: Bearer {your-jwt-token}
+```
+
+**Response:**
+
+```json
+{
+  "status": "success",
+  "user": {
+    "id": 1,
+    "fullName": "John Doe",
+    "profilePictureUrl": "https://example.com/profile.jpg",
+    "createdAt": "2025-11-09T10:30:00",
+    "updatedAt": "2025-11-09T10:30:00"
+  }
+}
+```
+
+#### Test Authentication
+
+```http
+GET /api/v1.0/test
+Authorization: Bearer {your-jwt-token}
+```
+
+**Response:**
+
+```json
+"Test Successful"
+```
+
+## Error Handling
+
+The application includes comprehensive error handling with standardized error responses:
+
+### Validation Errors
+
+```json
+{
+  "status": "error",
+  "message": "Validation failed",
+  "errors": {
+    "email": "Please provide a valid email address",
+    "password": "Password must be at least 6 characters long"
+  }
+}
+```
+
+### Authentication Errors
+
+```json
+{
+  "status": "error",
+  "message": "Invalid email or password",
+  "error_code": "INVALID_CREDENTIALS"
+}
+```
+
+### Account Not Activated
+
+```json
+{
+  "status": "error",
+  "message": "Account is not activated. Please check your email and activate your account before logging in.",
+  "error_code": "ACCOUNT_NOT_ACTIVATED"
+}
+```
+
+### JWT Token Expired
+
+```json
+{
+  "status": "error",
+  "message": "JWT token has expired",
+  "error_code": "TOKEN_EXPIRED"
+}
+```
+
+### Duplicate Email
+
+```json
+{
+  "status": "error",
+  "message": "Email address is already registered: john.doe@example.com",
+  "error_code": "DUPLICATE_EMAIL"
+}
+```
+
+## Validation Rules
+
+### Registration (ProfileDTO)
+
+- **fullName**: Required, 2-100 characters
+- **email**: Required, valid email format
+- **password**: Required, 6-100 characters
+- **profilePictureUrl**: Optional, max 255 characters
+
+### Login (AuthDTO)
+
+- **email**: Required, valid email format
+- **password**: Required, min 6 characters
+
+## Security Features
+
+- **Password Encryption**: BCrypt hashing
+- **JWT Authentication**: Stateless authentication with configurable expiration
+- **CORS**: Configured for cross-origin requests
+- **Input Validation**: Bean validation with custom error messages
+- **Exception Handling**: Global exception handler for consistent error responses
+
+## Configuration
+
+### JWT Settings
+
+```properties
+# JWT Configuration
+jwt.secret=YXV0aG5tb25leW1hbmFnZWFwcGF1dGhubW9uZXltYW5hZ2VhcHBzZWNyZXRrZXlmb3JzZWN1cml0eQ==
+jwt.expiration=36000000  # 10 hours in milliseconds
+```
+
+## Database Schema
+
+### Profile Entity
+
+```sql
+CREATE TABLE tbl_profiles (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    profile_picture_url VARCHAR(255),
+    is_active BOOLEAN DEFAULT FALSE,
+    activation_token VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
+## Future Enhancements
+
+- Password reset functionality
+- User profile update endpoint
+- Financial transaction management
+- Budget tracking
+- Expense categorization
+- Financial reports and analytics
+- Notification preferences
+- Two-factor authentication
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License.
