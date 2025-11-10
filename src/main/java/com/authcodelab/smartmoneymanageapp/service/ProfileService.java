@@ -118,6 +118,8 @@ public class ProfileService {
         return ProfileDTO.builder()
                 .id(currentUser.getId())
                 .fullName(currentUser.getFullName())
+                .password(currentUser.getPassword())
+                .email(currentUser.getEmail())
                 .profilePictureUrl(currentUser.getProfilePictureUrl())
                 .createdAt(currentUser.getCreatedAt())
                 .updatedAt(currentUser.getUpdatedAt())
