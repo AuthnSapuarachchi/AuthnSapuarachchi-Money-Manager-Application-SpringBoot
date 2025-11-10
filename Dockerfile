@@ -1,5 +1,14 @@
+# Build stage
+FROM eclipse-temurin:21-jdk AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN apt-get update && apt-get install -y maven
+RUN mvn clean package -DskipTests
+
+# Run stage
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY target/smartmoneymanageapp-0.0.1-SNAPSHOT.jar moneymanager-v1.0.jar
+COPY --from=build /app/target/smartmoneymanageapp-0.0.1-SNAPSHOT.jar moneymanager-v1.0.jar
 EXPOSE 9090
 ENTRYPOINT ["java","-jar","moneymanager-v1.0.jar"]
