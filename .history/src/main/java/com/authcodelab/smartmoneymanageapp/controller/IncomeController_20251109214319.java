@@ -1,5 +1,6 @@
 package com.authcodelab.smartmoneymanageapp.controller;
 
+import com.authcodelab.smartmoneymanageapp.dto.ExpenseDTO;
 import com.authcodelab.smartmoneymanageapp.dto.IncomeDTO;
 import com.authcodelab.smartmoneymanageapp.service.IncomeService;
 import lombok.RequiredArgsConstructor;
