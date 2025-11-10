@@ -9,6 +9,7 @@ import com.authcodelab.smartmoneymanageapp.exception.UserAccountNotActivatedExce
 import com.authcodelab.smartmoneymanageapp.repository.ProfileRepository;
 import com.authcodelab.smartmoneymanageapp.util.JwtUtill;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,6 +31,9 @@ public class ProfileService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtill jwtUtill;
 
+    @Value("${app.activation.url}")
+    private String activationURL;
+
     public ProfileDTO registerProfile(ProfileDTO profileDTO) {
         // Check if email already exists
         if (profileRepository.findByEmail(profileDTO.getEmail()).isPresent()) {
@@ -41,7 +45,7 @@ public class ProfileService {
         newProfile = profileRepository.save(newProfile);
 
         // Send activation email
-        String activationLink = "http://localhost:8081/api/v1.0/activate?token=" + newProfile.getActivationToken();
+        String activationLink = activationURL + "/api/v1.0/activate?token=" + newProfile.getActivationToken();
         String subject = "Activate your Smart Money Manage App account";
         String body = "Dear " + newProfile.getFullName() + ",\n\n"
                 + "Please activate your account by clicking the link below:\n"
