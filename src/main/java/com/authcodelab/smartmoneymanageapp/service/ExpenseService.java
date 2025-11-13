@@ -23,7 +23,7 @@ public class ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final ProfileService profileService;
 
-    //add expense
+    // add expense
     public ExpenseDTO addExpense(ExpenseDTO expenseDTO) {
         ProfileEntity profile = profileService.getCurrentProfile();
         CategoryEntity category = categoryRepository.findById(expenseDTO.getCategoryId())
@@ -33,7 +33,7 @@ public class ExpenseService {
         return toDTO(newExpense);
     }
 
-    //Retrives all expenses for current month/based on the date and end date
+    // Retrives all expenses for current month/based on the date and end date
     public List<ExpenseDTO> getCurrentMonthExpensesForCurrentUser() {
         ProfileEntity profile = profileService.getCurrentProfile();
         LocalDate now = LocalDate.now();
@@ -43,7 +43,7 @@ public class ExpenseService {
         return list.stream().map(this::toDTO).toList();
     }
 
-    //delete expenses
+    // delete expenses
     public void deleteExpense(Long expenseId) {
         ProfileEntity profile = profileService.getCurrentProfile();
         ExpenseEntity existingExpense = expenseRepository.findById(expenseId)
@@ -54,35 +54,54 @@ public class ExpenseService {
         expenseRepository.delete(existingExpense);
     }
 
-    //Get latest 5 expenses fr current user
+    // Get latest 5 expenses fr current user
     public List<ExpenseDTO> getLatest5ExpensesForCurrentUser() {
         ProfileEntity profile = profileService.getCurrentProfile();
         List<ExpenseEntity> list = expenseRepository.findTop5ByProfileIdOrderByDateDesc(profile.getId());
         return list.stream().map(this::toDTO).toList();
     }
 
-    //Get total expenses for current user
+    // Get total expenses for current user
     public BigDecimal getTotalExpensesForCurrentUser() {
         ProfileEntity profile = profileService.getCurrentProfile();
         BigDecimal total = expenseRepository.findTotalExpenseByProfileId(profile.getId());
         return total != null ? total : BigDecimal.ZERO;
     }
 
-    //filter expenses
+    // filter expenses
     public List<ExpenseDTO> filterExpenses(LocalDate startDate, LocalDate endDate, String keyword, Sort sort) {
         ProfileEntity profile = profileService.getCurrentProfile();
 
-        List<ExpenseEntity> list = expenseRepository.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(profile.getId(), startDate,endDate,keyword,sort);
+        List<ExpenseEntity> list;
+
+        // Use enhanced search if keyword is provided, otherwise get all in date range
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            list = expenseRepository.searchExpensesByKeyword(
+                    profile.getId(),
+                    startDate,
+                    endDate,
+                    keyword.trim(),
+                    sort);
+        } else {
+            // If no keyword, get all expenses in date range with sorting
+            list = expenseRepository.searchExpensesByKeyword(
+                    profile.getId(),
+                    startDate,
+                    endDate,
+                    "",
+                    sort);
+        }
+
         return list.stream().map(this::toDTO).toList();
     }
 
-    //Notifications
+    // Notifications
     public List<ExpenseDTO> getExpensesForUserOnDate(Long profileId, LocalDate date) {
         List<ExpenseEntity> list = expenseRepository.findByProfileIdAndDate(profileId, date);
         return list.stream().map(this::toDTO).toList();
     }
 
-    //helper method to convert DTO to Entity
+    // helper method to convert DTO to Entity
     private ExpenseEntity toEntity(ExpenseDTO dto, ProfileEntity profile, CategoryEntity category) {
         return ExpenseEntity.builder()
                 .amount(dto.getAmount())
@@ -95,12 +114,22 @@ public class ExpenseService {
     }
 
     private ExpenseDTO toDTO(ExpenseEntity entity) {
+        ExpenseDTO.CategoryInfo categoryInfo = null;
+        if (entity.getCategory() != null) {
+            categoryInfo = ExpenseDTO.CategoryInfo.builder()
+                    .id(entity.getCategory().getId())
+                    .name(entity.getCategory().getName())
+                    .icon(entity.getCategory().getIcon())
+                    .build();
+        }
+
         return ExpenseDTO.builder()
                 .id(entity.getId())
                 .name(entity.getName())
                 .icon(entity.getIcon())
                 .categoryId(entity.getCategory() != null ? entity.getCategory().getId() : null)
                 .categoryName(entity.getCategory() != null ? entity.getCategory().getName() : "N/A")
+                .category(categoryInfo)
                 .amount(entity.getAmount())
                 .date(entity.getDate())
                 .createdAt(entity.getCreatedAt())

@@ -1,5 +1,6 @@
 package com.authcodelab.smartmoneymanageapp.service;
 
+import com.authcodelab.smartmoneymanageapp.dto.ExpenseEmailDTO;
 import com.authcodelab.smartmoneymanageapp.dto.IncomeEmailDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Row;
@@ -93,6 +94,64 @@ public class EmailService {
 
         helper.setText(htmlBody, true);
         helper.addAttachment("income-report.xlsx", new ByteArrayResource(excelFile));
+
+        mailSender.send(message);
+    }
+
+    public void sendExpenseReport(String to, List<ExpenseEmailDTO> expenses) throws Exception {
+        // Build Excel file
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (XSSFWorkbook wb = new XSSFWorkbook()) {
+            Sheet sheet = wb.createSheet("Expense Report");
+
+            // Create header row
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("Date");
+            header.createCell(1).setCellValue("Source");
+            header.createCell(2).setCellValue("Amount");
+            header.createCell(3).setCellValue("Description");
+
+            // Add data rows
+            int rowNum = 1;
+            for (ExpenseEmailDTO dto : expenses) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(dto.getDate() != null ? dto.getDate().toString() : "");
+                row.createCell(1).setCellValue(dto.getSource() != null ? dto.getSource() : "");
+                row.createCell(2).setCellValue(dto.getAmount() != null ? dto.getAmount().doubleValue() : 0.0);
+                row.createCell(3).setCellValue(dto.getDescription() != null ? dto.getDescription() : "");
+            }
+
+            // Auto-size columns
+            for (int i = 0; i < 4; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            wb.write(baos);
+        }
+
+        byte[] excelFile = baos.toByteArray();
+
+        // Calculate total
+        BigDecimal total = expenses.stream()
+                .map(e -> e.getAmount() != null ? e.getAmount() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Send email with attachment
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom(fromEmail);
+        helper.setTo(to);
+        helper.setSubject("Expense Report");
+
+        String htmlBody = "<html><body>" +
+                "<h2>Expense Report</h2>" +
+                "<p>Please find attached the complete expense report.</p>" +
+                "<p><strong>Total Expense: </strong>" + total + "</p>" +
+                "<p><strong>Total Records: </strong>" + expenses.size() + "</p>" +
+                "</body></html>";
+
+        helper.setText(htmlBody, true);
+        helper.addAttachment("expense-report.xlsx", new ByteArrayResource(excelFile));
 
         mailSender.send(message);
     }

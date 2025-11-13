@@ -24,7 +24,7 @@ public class IncomeService {
     private final IncomeRepository incomeRepository;
     private final ProfileService profileService;
 
-    //add expense
+    // add expense
     public IncomeDTO addIncome(IncomeDTO incomeDTO) {
         ProfileEntity profile = profileService.getCurrentProfile();
         CategoryEntity category = categoryRepository.findById(incomeDTO.getCategoryId())
@@ -34,7 +34,7 @@ public class IncomeService {
         return toDTO(newExpense);
     }
 
-    //Retrieves all incomes for current month/based on the date and end date
+    // Retrieves all incomes for current month/based on the date and end date
     public List<IncomeDTO> getCurrentMonthExpensesForCurrentUser() {
         ProfileEntity profile = profileService.getCurrentProfile();
         LocalDate now = LocalDate.now();
@@ -44,7 +44,7 @@ public class IncomeService {
         return list.stream().map(this::toDTO).toList();
     }
 
-    //delete expenses
+    // delete expenses
     public void deleteIncome(Long incomeId) {
         ProfileEntity profile = profileService.getCurrentProfile();
         IncomeEntity existingIncome = incomeRepository.findById(incomeId)
@@ -55,29 +55,54 @@ public class IncomeService {
         incomeRepository.delete(existingIncome);
     }
 
-    //Get latest 5 incomes fr current user
+    // Get latest 5 incomes fr current user
     public List<IncomeDTO> getLatest5ExpensesForCurrentUser() {
         ProfileEntity profile = profileService.getCurrentProfile();
         List<IncomeEntity> list = incomeRepository.findTop5ByProfileIdOrderByDateDesc(profile.getId());
         return list.stream().map(this::toDTO).toList();
     }
 
-    //Get total expenses for current user
+    // Get total expenses for current user
     public BigDecimal getTotalExpensesForCurrentUser() {
         ProfileEntity profile = profileService.getCurrentProfile();
         BigDecimal total = incomeRepository.findTotalExpenseByProfileId(profile.getId());
         return total != null ? total : BigDecimal.ZERO;
     }
 
-    //filter incomes
+    // filter incomes
     public List<IncomeDTO> filterIncomes(LocalDate startDate, LocalDate endDate, String keyword, Sort sort) {
         ProfileEntity profile = profileService.getCurrentProfile();
 
-        List<IncomeEntity> list = incomeRepository.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(profile.getId(), startDate,endDate,keyword,sort);
+        List<IncomeEntity> list;
+
+        // Use enhanced search if keyword is provided, otherwise get all in date range
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            list = incomeRepository.searchIncomesByKeyword(
+                    profile.getId(),
+                    startDate,
+                    endDate,
+                    keyword.trim(),
+                    sort);
+        } else {
+            // If no keyword, get all incomes in date range and apply sorting
+            list = incomeRepository.findByProfileIdAndDateBetween(
+                    profile.getId(),
+                    startDate,
+                    endDate);
+            // Note: Manual sorting would be needed here if using this branch
+            // For simplicity, we can use the keyword search with empty string
+            list = incomeRepository.searchIncomesByKeyword(
+                    profile.getId(),
+                    startDate,
+                    endDate,
+                    "",
+                    sort);
+        }
+
         return list.stream().map(this::toDTO).toList();
     }
 
-    //helper method to convert DTO to Entity
+    // helper method to convert DTO to Entity
     private IncomeEntity toEntity(IncomeDTO dto, ProfileEntity profile, CategoryEntity category) {
         return IncomeEntity.builder()
                 .amount(dto.getAmount())
@@ -90,12 +115,22 @@ public class IncomeService {
     }
 
     private IncomeDTO toDTO(IncomeEntity entity) {
+        IncomeDTO.CategoryInfo categoryInfo = null;
+        if (entity.getCategory() != null) {
+            categoryInfo = IncomeDTO.CategoryInfo.builder()
+                    .id(entity.getCategory().getId())
+                    .name(entity.getCategory().getName())
+                    .icon(entity.getCategory().getIcon())
+                    .build();
+        }
+
         return IncomeDTO.builder()
                 .id(entity.getId())
                 .name(entity.getName())
                 .icon(entity.getIcon())
                 .categoryId(entity.getCategory() != null ? entity.getCategory().getId() : null)
                 .categoryName(entity.getCategory() != null ? entity.getCategory().getName() : "N/A")
+                .category(categoryInfo)
                 .amount(entity.getAmount())
                 .date(entity.getDate())
                 .createdAt(entity.getCreatedAt())
