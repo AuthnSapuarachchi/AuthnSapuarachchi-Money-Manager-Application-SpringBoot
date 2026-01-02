@@ -40,6 +40,7 @@ A comprehensive Spring Boot RESTful API for managing personal finances with JWT 
 ## ✨ Features
 
 ### 🔐 Authentication & Authorization
+
 - ✅ User registration with email verification
 - ✅ JWT token-based authentication
 - ✅ Secure password encryption (BCrypt)
@@ -47,6 +48,7 @@ A comprehensive Spring Boot RESTful API for managing personal finances with JWT 
 - ✅ Protected API endpoints
 
 ### 💳 Financial Management
+
 - ✅ Income tracking with categories
 - ✅ Expense tracking with categories
 - ✅ Custom category creation (income/expense)
@@ -54,17 +56,20 @@ A comprehensive Spring Boot RESTful API for managing personal finances with JWT 
 - ✅ Advanced filtering (date range, keyword, sorting)
 
 ### 📊 Reporting & Export
+
 - ✅ Excel export for income/expense data
 - ✅ Email reports with attachments
 - ✅ Daily expense summaries
 - ✅ Transaction history
 
 ### 🔔 Automated Notifications
+
 - ✅ Daily income/expense reminders (10 PM IST)
 - ✅ Daily expense summary emails (11 PM IST)
 - ✅ Account activation emails
 
 ### 🛡️ Security & Validation
+
 - ✅ Global exception handling
 - ✅ Input validation (Bean Validation)
 - ✅ CORS configuration
@@ -76,6 +81,7 @@ A comprehensive Spring Boot RESTful API for managing personal finances with JWT 
 ## 🛠️ Technology Stack
 
 ### Core Technologies
+
 - **Java**: 21 (LTS)
 - **Spring Boot**: 3.5.7
 - **Spring Security**: JWT-based authentication
@@ -84,16 +90,19 @@ A comprehensive Spring Boot RESTful API for managing personal finances with JWT 
 - **Hibernate**: ORM framework
 
 ### Database
+
 - **MySQL**: 8.0+ (Primary)
 - **PostgreSQL**: Supported for production
 
 ### Build & Tools
+
 - **Maven**: 3.6+
 - **Lombok**: Boilerplate reduction
 - **Apache POI**: Excel generation (5.2.5)
 - **JJWT**: JWT implementation (0.11.5)
 
 ### Email Service
+
 - **Brevo (Sendinblue)**: SMTP provider
 
 ---
@@ -172,6 +181,7 @@ Ensure you have the following installed:
 ```
 
 **Verify Installations:**
+
 ```bash
 java -version    # Should show Java 21
 mvn -version     # Should show Maven 3.6+
@@ -183,12 +193,14 @@ mysql --version  # Should show MySQL 8.0+
 ### Installation
 
 1. **Clone the Repository**
+
 ```bash
 git clone <repository-url>
 cd smartmoneymanageapp
 ```
 
 2. **Create MySQL Database**
+
 ```sql
 CREATE DATABASE moneymanage_app;
 ```
@@ -283,16 +295,19 @@ echo -n "your-secret-key" | base64
 #### Development Mode
 
 **Using Maven:**
+
 ```bash
 ./mvnw spring-boot:run
 ```
 
 **Using Maven Wrapper (Windows):**
+
 ```bash
 mvnw.cmd spring-boot:run
 ```
 
 **Using IDE (IntelliJ IDEA/Eclipse):**
+
 - Open project
 - Run `SmartmoneymanageappApplication.java`
 
@@ -313,6 +328,7 @@ java -jar target/smartmoneymanageapp-0.0.1-SNAPSHOT.jar
 ## 📚 API Documentation
 
 ### Base URL
+
 ```
 http://localhost:8081/api/v1.0
 ```
@@ -320,6 +336,7 @@ http://localhost:8081/api/v1.0
 ### Authentication Endpoints
 
 #### 1. Register User
+
 ```http
 POST /register
 Content-Type: application/json
@@ -333,6 +350,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -348,11 +366,13 @@ Content-Type: application/json
 ```
 
 #### 2. Activate Account
+
 ```http
 GET /activate?token=<activation-token>
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -361,6 +381,7 @@ GET /activate?token=<activation-token>
 ```
 
 #### 3. Login
+
 ```http
 POST /login
 Content-Type: application/json
@@ -372,6 +393,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -390,6 +412,7 @@ Content-Type: application/json
 ### Protected Endpoints (Require JWT Token)
 
 **Authorization Header:**
+
 ```
 Authorization: Bearer <your-jwt-token>
 ```
@@ -397,17 +420,20 @@ Authorization: Bearer <your-jwt-token>
 ### Category Management
 
 #### Get All Categories
+
 ```http
 GET /categories
 ```
 
 #### Get Categories by Type
+
 ```http
 GET /categories?type=income
 GET /categories?type=expense
 ```
 
 #### Create Category
+
 ```http
 POST /categories
 Content-Type: application/json
@@ -420,6 +446,7 @@ Content-Type: application/json
 ```
 
 #### Update Category
+
 ```http
 PUT /categories/{categoryId}
 Content-Type: application/json
@@ -435,11 +462,13 @@ Content-Type: application/json
 ### Income Management
 
 #### Get All Incomes
+
 ```http
 GET /incomes
 ```
 
 #### Create Income
+
 ```http
 POST /incomes
 Content-Type: application/json
@@ -454,11 +483,13 @@ Content-Type: application/json
 ```
 
 #### Delete Income
+
 ```http
 DELETE /incomes/{incomeId}
 ```
 
 #### Download Income Excel
+
 ```http
 GET /incomes/excel/download
 ```
@@ -468,11 +499,13 @@ GET /incomes/excel/download
 ### Expense Management
 
 #### Get All Expenses
+
 ```http
 GET /expenses
 ```
 
 #### Create Expense
+
 ```http
 POST /expenses
 Content-Type: application/json
@@ -487,11 +520,13 @@ Content-Type: application/json
 ```
 
 #### Delete Expense
+
 ```http
 DELETE /expenses/{expenseId}
 ```
 
 #### Download Expense Excel
+
 ```http
 GET /expenses/excel/download
 ```
@@ -501,11 +536,13 @@ GET /expenses/excel/download
 ### Dashboard
 
 #### Get Dashboard Data
+
 ```http
 GET /dashboard
 ```
 
 **Response:**
+
 ```json
 {
   "totalBalance": 4850.00,
@@ -522,6 +559,7 @@ GET /dashboard
 ### Filter & Search
 
 #### Filter Transactions
+
 ```http
 POST /filters
 Content-Type: application/json
@@ -541,6 +579,7 @@ Content-Type: application/json
 ### Email Reports
 
 #### Send Income Report
+
 ```http
 POST /email/income
 Content-Type: application/json
@@ -559,6 +598,7 @@ Content-Type: application/json
 ```
 
 #### Send Expense Report
+
 ```http
 POST /email/expense
 Content-Type: application/json
@@ -586,6 +626,7 @@ GET /status
 ```
 
 **Response:**
+
 ```
 "Smart Money Manage App is running!"
 ```
@@ -597,54 +638,58 @@ GET /status
 ### Tables
 
 #### 1. tbl_profiles
-| Column | Type | Constraints |
-|--------|------|-------------|
-| id | BIGINT | PRIMARY KEY, AUTO_INCREMENT |
-| full_name | VARCHAR(100) | NOT NULL |
-| email | VARCHAR(255) | UNIQUE, NOT NULL |
-| password | VARCHAR(255) | NOT NULL (Encrypted) |
-| profile_picture_url | VARCHAR(255) | NULL |
-| is_active | BOOLEAN | DEFAULT FALSE |
-| activation_token | VARCHAR(255) | NULL |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
+
+| Column              | Type         | Constraints                 |
+| ------------------- | ------------ | --------------------------- |
+| id                  | BIGINT       | PRIMARY KEY, AUTO_INCREMENT |
+| full_name           | VARCHAR(100) | NOT NULL                    |
+| email               | VARCHAR(255) | UNIQUE, NOT NULL            |
+| password            | VARCHAR(255) | NOT NULL (Encrypted)        |
+| profile_picture_url | VARCHAR(255) | NULL                        |
+| is_active           | BOOLEAN      | DEFAULT FALSE               |
+| activation_token    | VARCHAR(255) | NULL                        |
+| created_at          | TIMESTAMP    | NOT NULL                    |
+| updated_at          | TIMESTAMP    | NOT NULL                    |
 
 #### 2. tbl_categories
-| Column | Type | Constraints |
-|--------|------|-------------|
-| id | BIGINT | PRIMARY KEY, AUTO_INCREMENT |
-| name | VARCHAR(100) | NOT NULL |
-| type | VARCHAR(20) | NOT NULL (income/expense) |
-| icon | VARCHAR(50) | NULL |
-| profile_id | BIGINT | FOREIGN KEY → tbl_profiles(id) |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
+
+| Column     | Type         | Constraints                    |
+| ---------- | ------------ | ------------------------------ |
+| id         | BIGINT       | PRIMARY KEY, AUTO_INCREMENT    |
+| name       | VARCHAR(100) | NOT NULL                       |
+| type       | VARCHAR(20)  | NOT NULL (income/expense)      |
+| icon       | VARCHAR(50)  | NULL                           |
+| profile_id | BIGINT       | FOREIGN KEY → tbl_profiles(id) |
+| created_at | TIMESTAMP    | NOT NULL                       |
+| updated_at | TIMESTAMP    | NOT NULL                       |
 
 #### 3. tbl_incomes
-| Column | Type | Constraints |
-|--------|------|-------------|
-| id | BIGINT | PRIMARY KEY, AUTO_INCREMENT |
-| name | VARCHAR(255) | NOT NULL |
-| amount | DECIMAL(19,2) | NOT NULL |
-| date | DATE | NOT NULL |
-| icon | VARCHAR(50) | NULL |
-| category_id | BIGINT | FOREIGN KEY → tbl_categories(id) |
-| profile_id | BIGINT | FOREIGN KEY → tbl_profiles(id) |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
+
+| Column      | Type          | Constraints                      |
+| ----------- | ------------- | -------------------------------- |
+| id          | BIGINT        | PRIMARY KEY, AUTO_INCREMENT      |
+| name        | VARCHAR(255)  | NOT NULL                         |
+| amount      | DECIMAL(19,2) | NOT NULL                         |
+| date        | DATE          | NOT NULL                         |
+| icon        | VARCHAR(50)   | NULL                             |
+| category_id | BIGINT        | FOREIGN KEY → tbl_categories(id) |
+| profile_id  | BIGINT        | FOREIGN KEY → tbl_profiles(id)   |
+| created_at  | TIMESTAMP     | NOT NULL                         |
+| updated_at  | TIMESTAMP     | NOT NULL                         |
 
 #### 4. tbl_expenses
-| Column | Type | Constraints |
-|--------|------|-------------|
-| id | BIGINT | PRIMARY KEY, AUTO_INCREMENT |
-| name | VARCHAR(255) | NOT NULL |
-| amount | DECIMAL(19,2) | NOT NULL |
-| date | DATE | NOT NULL |
-| icon | VARCHAR(50) | NULL |
-| category_id | BIGINT | FOREIGN KEY → tbl_categories(id) |
-| profile_id | BIGINT | FOREIGN KEY → tbl_profiles(id) |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
+
+| Column      | Type          | Constraints                      |
+| ----------- | ------------- | -------------------------------- |
+| id          | BIGINT        | PRIMARY KEY, AUTO_INCREMENT      |
+| name        | VARCHAR(255)  | NOT NULL                         |
+| amount      | DECIMAL(19,2) | NOT NULL                         |
+| date        | DATE          | NOT NULL                         |
+| icon        | VARCHAR(50)   | NULL                             |
+| category_id | BIGINT        | FOREIGN KEY → tbl_categories(id) |
+| profile_id  | BIGINT        | FOREIGN KEY → tbl_profiles(id)   |
+| created_at  | TIMESTAMP     | NOT NULL                         |
+| updated_at  | TIMESTAMP     | NOT NULL                         |
 
 ### Entity Relationships
 
@@ -693,10 +738,12 @@ CategoryEntity (1) ──< (M) ExpenseEntity
 ### Scheduled Jobs (Spring @Scheduled)
 
 #### 1. Daily Reminder (10:00 PM IST)
+
 - Sends reminder to log income/expense
 - Recipient: All active users
 
 #### 2. Daily Expense Summary (11:00 PM IST)
+
 - Sends HTML email with expense table
 - Recipient: Users with expenses today
 - Includes: Transaction details, total amount
@@ -704,6 +751,7 @@ CategoryEntity (1) ──< (M) ExpenseEntity
 ### Email Templates
 
 **Activation Email:**
+
 ```
 Subject: Activate your Smart Money Manage App account
 
@@ -717,6 +765,7 @@ Smart Money Manage App Team
 ```
 
 **Daily Reminder:**
+
 ```
 Subject: Daily Income/Expense Reminder
 
@@ -784,6 +833,7 @@ src/test/java/com/authcodelab/smartmoneymanageapp/
 ### Docker Deployment
 
 **Dockerfile:**
+
 ```dockerfile
 FROM openjdk:21-jdk-slim
 WORKDIR /app
@@ -793,6 +843,7 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
 
 **Build & Run:**
+
 ```bash
 docker build -t money-manager-backend .
 docker run -p 8081:8081 -e DB_URL=... -e BREVO_HOST=... money-manager-backend
@@ -837,6 +888,7 @@ export MONEY_MANAGER_BACKEND_URL=https://api.yourdomain.com
 ## 📊 Performance Tips
 
 1. **Database Indexing**: Add indexes on frequently queried columns
+
 ```sql
 CREATE INDEX idx_profile_email ON tbl_profiles(email);
 CREATE INDEX idx_income_date ON tbl_incomes(date);
@@ -844,6 +896,7 @@ CREATE INDEX idx_expense_date ON tbl_expenses(date);
 ```
 
 2. **Connection Pooling**: Configure HikariCP
+
 ```properties
 spring.datasource.hikari.maximum-pool-size=10
 spring.datasource.hikari.minimum-idle=5
@@ -872,6 +925,7 @@ This project is licensed under the MIT License.
 ## 👨‍💻 Author
 
 **Your Name**
+
 - GitHub: [@yourusername](https://github.com/yourusername)
 - Email: your.email@example.com
 
@@ -888,6 +942,7 @@ This project is licensed under the MIT License.
 ## 📞 Support
 
 For issues, questions, or suggestions:
+
 - Open an issue on GitHub
 - Email: support@yourdomain.com
 
