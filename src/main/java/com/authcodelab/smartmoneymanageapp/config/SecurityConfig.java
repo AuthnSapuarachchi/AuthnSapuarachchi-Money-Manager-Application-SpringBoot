@@ -36,18 +36,16 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/v1.0/auth/**",       // Allow Login/Register
+                                "/register",
+                                "/login",
+                                "/activate",
                                 "/auth/**",
-                                "/api/v1.0/public/**",
-                                "/actuator/**",            // Allow Health Checks
-
-                                // SWAGGER WHITELIST (Copy these exact lines)
+                                "/public/**",
+                                "/actuator/**",
                                 "/v3/api-docs/**",
-                                "/v3/api-docs.yaml",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/actuator/**"
-                        ).permitAll()
+                                "/swagger-ui.html")
+                        .permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
@@ -63,7 +61,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173", "*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         configuration.setAllowCredentials(true);
