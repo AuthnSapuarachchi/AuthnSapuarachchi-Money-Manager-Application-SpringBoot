@@ -35,7 +35,19 @@ public class SecurityConfig {
         httpSecurity.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/health", "/status", "/register", "/activate", "/login").permitAll()
+                        .requestMatchers(
+                                "/api/v1.0/auth/**",       // Allow Login/Register
+                                "/auth/**",
+                                "/api/v1.0/public/**",
+                                "/actuator/**",            // Allow Health Checks
+
+                                // SWAGGER WHITELIST (Copy these exact lines)
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/actuator/**"
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
