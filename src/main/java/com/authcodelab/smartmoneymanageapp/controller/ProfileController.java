@@ -19,7 +19,7 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-    @Value("${app.frontend.url:http://localhost}") // Default to localhost if not set
+    @Value("${app.frontend.url}") // Default to localhost if not set
     private String frontendUrl;
 
     @PostMapping("/register")
