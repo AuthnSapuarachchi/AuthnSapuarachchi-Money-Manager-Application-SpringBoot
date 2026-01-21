@@ -45,8 +45,7 @@ public class ProfileController {
         // 1. Activate the profile
         profileService.activateProfile(token);
 
-        // 2. Define where to go (The Login Page)
-        // This creates: http://localhost/login or http://13.212.x.x/login
+        // 2. Define where to go (The Login Page
         URI loginPageUri = URI.create(frontendUrl + "/login");
 
         // 3. Send a "302 Found" Redirect response
