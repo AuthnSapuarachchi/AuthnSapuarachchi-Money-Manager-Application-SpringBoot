@@ -2,13 +2,13 @@ package com.authcodelab.smartmoneymanageapp.service;
 
 import com.authcodelab.smartmoneymanageapp.dto.ExpenseEmailDTO;
 import com.authcodelab.smartmoneymanageapp.dto.IncomeEmailDTO;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -28,14 +28,28 @@ public class EmailService {
     private String fromEmail;
 
     public void sendEmail(String to, String subject, String body) {
-        try{
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(body);
+        try {
+            // 1. Create a MimeMessage (Required for HTML)
+            MimeMessage message = mailSender.createMimeMessage();
+
+            // 2. Use the Helper (true = multipart mode)
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom("authn.sapuarachchi@gmail.com");
+
+            helper.setTo(to);
+            helper.setSubject(subject);
+
+            // 3. Set the body and toggle 'true' for HTML
+            helper.setText(body, true);
+
+            // 4. Send
             mailSender.send(message);
-        } catch (Exception e) {
+            System.out.println("Mail sent successfully to " + to);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            // Log the error properly in production
             throw new RuntimeException("Failed to send email", e);
         }
     }

@@ -42,13 +42,11 @@ public class ProfileController {
 
     @GetMapping("/activate")
     public ResponseEntity<Void> activateProfile(@RequestParam String token) {
-        // 1. Activate the profile
+
         profileService.activateProfile(token);
 
-        // 2. Define where to go (The Login Page
         URI loginPageUri = URI.create(frontendUrl + "/login");
 
-        // 3. Send a "302 Found" Redirect response
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(loginPageUri)
                 .build();

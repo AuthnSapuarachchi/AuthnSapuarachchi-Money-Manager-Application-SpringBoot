@@ -44,15 +44,49 @@ public class ProfileService {
         newProfile.setActivationToken(UUID.randomUUID().toString());
         newProfile = profileRepository.save(newProfile);
 
-        // Send activation email
+        // --- HTML EMAIL DESIGN START ---
         String activationLink = activationURL + "/api/v1.0/activate?token=" + newProfile.getActivationToken();
-        String subject = "Activate your Smart Money Manage App account";
-        String body = "Dear " + newProfile.getFullName() + ",\n\n"
-                + "Please activate your account by clicking the link below:\n"
-                + activationLink + "\n\n"
-                + "Best regards,\n"
-                + "Smart Money Manage App Team";
+        String subject = "Welcome to Smart Money! 🚀 Activate your account";
+
+        String body = """
+        <html>
+          <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
+            <div style="max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+              
+              <h2 style="color: #333333; text-align: center;">Welcome to Smart Money!</h2>
+              
+              <p style="color: #555555; font-size: 16px;">Dear <strong>%s</strong>,</p>
+              
+              <p style="color: #555555; font-size: 16px;">
+                Thank you for registering. We are excited to help you take control of your finances! 
+                Please click the button below to verify your email address and activate your account.
+              </p>
+              
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="%s" style="background-color: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; font-size: 16px; border-radius: 5px; display: inline-block; font-weight: bold;">
+                  Verify My Account
+                </a>
+              </div>
+              
+              <p style="color: #999999; font-size: 14px; text-align: center;">
+                If the button above doesn't work, copy and paste this link into your browser:<br>
+                <a href="%s" style="color: #4CAF50;">%s</a>
+              </p>
+              
+              <hr style="border: none; border-top: 1px solid #eeeeee; margin: 20px 0;">
+              
+              <p style="color: #aaaaaa; font-size: 12px; text-align: center;">
+                Best regards,<br>
+                <strong>Smart Money Manage App Team</strong>
+              </p>
+            </div>
+          </body>
+        </html>
+        """.formatted(newProfile.getFullName(), activationLink, activationLink, activationLink);
+
+        // Send the email (Make sure your service supports HTML!)
         emailService.sendEmail(newProfile.getEmail(), subject, body);
+
         return toDTO(newProfile);
     }
 
